@@ -10,5 +10,5 @@ RUN apt-get update && \
 
 RUN apt-get update && apt-get install -y sysstat
 RUN python -m pip install --upgrade pip
-ADD requirements.txt 
+ADD requirements.txt  .
 RUN pip install -r requirements.txt

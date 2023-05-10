@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, get_linear_schedule_with_warmup, set_seed
 
 from accelerate import Accelerator, DistributedType
+from tqdm import tqdm
 
 
 MAX_GPU_BATCH_SIZE = 16
@@ -18,6 +19,7 @@ EVAL_BATCH_SIZE = 32
 def get_dataloaders(accelerator: Accelerator, batch_size: int = 16):
     tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
     datasets = load_dataset("glue", "mrpc")
+    # datasets = load_dataset("mrpc")
 
     def tokenize_function(examples):
         outputs = tokenizer(examples["sentence1"], examples["sentence2"], truncation=True, max_length=None)
@@ -117,7 +119,7 @@ def training_function(config, args):
     # Now we train the model
     for epoch in range(num_epochs):
         model.train()
-        for step, batch in enumerate(train_dataloader):
+        for step, batch in tqdm(enumerate(train_dataloader)):
             # We could avoid this line since we set the accelerator with `device_placement=True`.
             batch.to(accelerator.device)
             outputs = model(**batch)
