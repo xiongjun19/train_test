@@ -154,8 +154,9 @@ def training_function(config, args):
                 if start_status:
                     start_status = False
                     p_stop()
-            if step >= (warm_step + act_step + reap):
                 break
+            # if step >= (warm_step + act_step + reap):
+            #     break
             batch.to(accelerator.device)
             outputs = model(**batch)
             loss = outputs.loss
@@ -167,22 +168,22 @@ def training_function(config, args):
                 optimizer.zero_grad()
 
 
-        model.eval()
-        for step, batch in enumerate(eval_dataloader):
-            # We could avoid this line since we set the accelerator with `device_placement=True`.
-            batch.to(accelerator.device)
-            with torch.no_grad():
-                outputs = model(**batch)
-            predictions = outputs.logits.argmax(dim=-1)
-            predictions, references = accelerator.gather_for_metrics((predictions, batch["labels"]))
-            metric.add_batch(
-                predictions=predictions,
-                references=references,
-            )
+        # model.eval()
+        # for step, batch in enumerate(eval_dataloader):
+        #     # We could avoid this line since we set the accelerator with `device_placement=True`.
+        #     batch.to(accelerator.device)
+        #     with torch.no_grad():
+        #         outputs = model(**batch)
+        #     predictions = outputs.logits.argmax(dim=-1)
+        #     predictions, references = accelerator.gather_for_metrics((predictions, batch["labels"]))
+        #     metric.add_batch(
+        #         predictions=predictions,
+        #         references=references,
+        #     )
 
-        eval_metric = metric.compute()
-        # Use accelerator.print to print only on the main process.
-        accelerator.print(f"epoch {epoch}:", eval_metric)
+        # eval_metric = metric.compute()
+        # # Use accelerator.print to print only on the main process.
+        # accelerator.print(f"epoch {epoch}:", eval_metric)
 
 
 def main():
