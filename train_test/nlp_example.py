@@ -17,7 +17,7 @@ EVAL_BATCH_SIZE = 32
 
 
 def get_dataloaders(accelerator: Accelerator, batch_size: int = 16):
-    tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
+    tokenizer = AutoTokenizer.from_pretrained("bert-large-cased")
     datasets = load_dataset("glue", "mrpc")
     # datasets = load_dataset("mrpc")
 
@@ -92,7 +92,7 @@ def training_function(config, args):
     set_seed(seed)
     train_dataloader, eval_dataloader = get_dataloaders(accelerator, batch_size)
     # Instantiate the model (we build the model here so that the seed also control new weights initialization)
-    model = AutoModelForSequenceClassification.from_pretrained("bert-base-cased", return_dict=True)
+    model = AutoModelForSequenceClassification.from_pretrained("bert-large-cased", return_dict=True)
 
     # We could avoid this line since the accelerator is set with `device_placement=True` (default value).
     # Note that if you are placing tensors on devices manually, this line absolutely needs to be before the optimizer
