@@ -42,6 +42,15 @@ cd /workspace/train_test/
 OMP_NUM_THREADS=20 python -m  torch.distributed.launch --nproc_per_node 8 --nnodes 1 --node_rank 0 test_nccl.py
 
 
+### 运行训练测试样本
+cd /workspace/train_test/train_test
 
+#### 原始没有加profiler 的脚本
+python -m torch.distributed.launch --nproc_per_node 8 --use_env nlp_example.py
+#### 加上profiler
+python -m torch.distributed.launch --nproc_per_node 8 --use_env nlp_example_prof.py
+
+
+上面的代码会生成一个bert_large_log 的日志文件夹
 
 
