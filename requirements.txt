@@ -1,0 +1,4 @@
+transformers>=4.24
+accelerate
+evaluate
+
