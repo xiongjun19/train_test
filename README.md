@@ -38,19 +38,30 @@ make
 ```
 
 ### 运行python 脚本检测torch all reduce 
+```
 cd /workspace/train_test/
 OMP_NUM_THREADS=20 python -m  torch.distributed.launch --nproc_per_node 8 --nnodes 1 --node_rank 0 test_nccl.py
+```
 
 
 ### 运行训练测试样本
+```
 cd /workspace/train_test/train_test
+```
 
 #### 原始没有加profiler 的脚本
+```
 python -m torch.distributed.launch --nproc_per_node 8 --use_env nlp_example.py
-#### 加上profiler
+```
+#### 加上pytorch profiler
+```
 python -m torch.distributed.launch --nproc_per_node 8 --use_env nlp_example_prof.py
-
-
+```
 上面的代码会生成一个bert_large_log 的日志文件夹
 
+#### 利用nsys 得到日志(maybe better than pytorch profiler)
+```
+nsys profile  -c cudaProfilerApi -f true --stats true  -o bert_large_nsys.qdrep python -m torch.distributed.launch --nproc_per_node 8 --use_env nlp_example_nsys.py
+```
+上面的脚本会生成bert_large_nsys 开头的问题件， 这些日志文件比较重要
 
