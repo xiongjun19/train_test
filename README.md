@@ -28,7 +28,18 @@ img_name='train_test'
 cnt_name='train_test_cnt'
 docker run --name ${cnt_name} -it --gpus all --ipc=host -v `pwd`:/workspace/train_test ${img_name}
 ```
+以上命令生成并且进入了docker 容器
 
+### 在容器里面编译与测试nccl_test
+```
+cd /workspace/train_test/nccl-tests
+make 
+./build/all_reduce_perf -b 1K -e 512M -f 2 -g 8 > nccl-test_log.txt
+```
+
+### 运行python 脚本检测torch all reduce 
+cd /workspace/train_test/
+OMP_NUM_THREADS=20 python -m  torch.distributed.launch --nproc_per_node 8 --nnodes 1 --node_rank 0 test_nccl.py
 
 
 

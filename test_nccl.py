@@ -8,10 +8,11 @@ import numpy as np
 
 def test(device, rank, local_rank):
     _shape = [30592, 64, 1024]
+    _shape = [4096, 512, 2048]
     data_bytes = np.prod(_shape) * 2
     x1 = torch.randn(_shape, dtype=torch.float16)
     x1 = x1.to(device)
-    x2 = torch.ones(_shape, dtype=torch.float16)
+    x2 = torch.ones([1, 1, 1], dtype=torch.float16)
     x2 = x2.to(device)
     iters = 1
     torch.cuda.synchronize()
@@ -24,7 +25,8 @@ def test(device, rank, local_rank):
     torch.cuda.synchronize()
     gen_time = t_start.elapsed_time(t_end) / 1000 # convert mill to sec
     bandwith = data_bytes / gen_time / 1e6  * iters
-    print(f"the local_rank is {local_rank}; the transfer time is:{gen_time}, the bandwith is :{bandwith} MB/s")
+    d_id = device.index
+    print(f"the local_rank is {local_rank}, the device is {d_id}, the transfer time is:{gen_time}, the bandwith is :{bandwith} MB/s")
     y = x1 * x2
     return y
 
