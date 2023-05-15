@@ -35,6 +35,9 @@ docker run --name ${cnt_name} -it --gpus all --ipc=host -v `pwd`:/workspace/trai
 cd /workspace/train_test/nccl-tests
 make 
 ./build/all_reduce_perf -b 1K -e 512M -f 2 -g 8 > nccl-test_log.txt
+CUDA_VISIBLE_DEVICES=0,1 ./build/all_reduce_perf -b 1K -e 128M -f 2 -g 2 > nccl-test_log_0_1.txt
+CUDA_VISIBLE_DEVICES=0,2 ./build/all_reduce_perf -b 1K -e 128M -f 2 -g 2 > nccl-test_log_0_2.txt
+CUDA_VISIBLE_DEVICES=0,5 ./build/all_reduce_perf -b 1K -e 128M -f 2 -g 2 > nccl-test_log_0_5.txt
 ```
 
 ### 运行python 脚本检测torch all reduce 
