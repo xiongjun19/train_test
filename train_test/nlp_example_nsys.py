@@ -15,7 +15,7 @@ from tqdm import tqdm
 import ctypes
 
 
-MAX_GPU_BATCH_SIZE = 16
+MAX_GPU_BATCH_SIZE = 2048
 EVAL_BATCH_SIZE = 32
 
 
@@ -142,19 +142,22 @@ def training_function(config, args):
     reap = 2
     start_status = False
     # Now we train the model
+    iter_num = 0
     for epoch in range(1):
         model.train()
         for step, batch in tqdm(enumerate(train_dataloader)):
+            iter_num = iter_num + 1
             # We could avoid this line since we set the accelerator with `device_placement=True`.
-            if step >= warm_step and not start_status:
-                if step < (warm_step + act_step):
+            if iter_num >= warm_step and not start_status:
+                if iter_num < (warm_step + act_step):
                     p_start()
                     start_status = True
-            if step >= (warm_step + act_step):
+            if iter_num >= (warm_step + act_step):
                 if start_status:
                     start_status = False
                     p_stop()
                 break
+                return
             # if step >= (warm_step + act_step + reap):
             #     break
             batch.to(accelerator.device)
@@ -199,7 +202,7 @@ def main():
     )
     parser.add_argument("--cpu", action="store_true", help="If passed, will train on the CPU.")
     args = parser.parse_args()
-    config = {"lr": 2e-5, "num_epochs": 3, "seed": 42, "batch_size": 16}
+    config = {"lr": 2e-5, "num_epochs": 3, "seed": 42, "batch_size": 128}
     training_function(config, args)
 
 
