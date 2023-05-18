@@ -143,7 +143,7 @@ def training_function(config, args):
     start_status = False
     # Now we train the model
     iter_num = 0
-    for epoch in range(1):
+    for epoch in range(num_epochs):
         model.train()
         for step, batch in tqdm(enumerate(train_dataloader)):
             iter_num = iter_num + 1
@@ -202,7 +202,7 @@ def main():
     )
     parser.add_argument("--cpu", action="store_true", help="If passed, will train on the CPU.")
     args = parser.parse_args()
-    config = {"lr": 2e-5, "num_epochs": 3, "seed": 42, "batch_size": 128}
+    config = {"lr": 2e-5, "num_epochs": 10, "seed": 42, "batch_size": 128}
     training_function(config, args)
 
 

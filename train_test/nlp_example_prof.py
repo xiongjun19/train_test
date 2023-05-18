@@ -12,7 +12,7 @@ from accelerate import Accelerator, DistributedType
 from tqdm import tqdm
 
 
-MAX_GPU_BATCH_SIZE = 16
+MAX_GPU_BATCH_SIZE = 2048
 EVAL_BATCH_SIZE = 32
 
 
@@ -178,7 +178,7 @@ def main():
     )
     parser.add_argument("--cpu", action="store_true", help="If passed, will train on the CPU.")
     args = parser.parse_args()
-    config = {"lr": 2e-5, "num_epochs": 3, "seed": 42, "batch_size": 16}
+    config = {"lr": 2e-5, "num_epochs": 3, "seed": 42, "batch_size": 128}
     training_function(config, args)
 
 
