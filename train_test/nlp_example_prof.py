@@ -118,10 +118,14 @@ def training_function(config, args):
 
     wait_step = 1
     warm_step = 1
-    act_step = 3
+    act_step = 5
     reap = 2
     log_path = 'bert_large_log'
     prof = torch.profiler.profile(
+        activities=[
+                torch.profiler.ProfilerActivity.CPU,
+                torch.profiler.ProfilerActivity.CUDA
+            ],
         schedule=torch.profiler.schedule(wait=wait_step, warmup=warm_step, active=act_step, repeat=reap),
         on_trace_ready=torch.profiler.tensorboard_trace_handler(log_path),
         record_shapes=True,
