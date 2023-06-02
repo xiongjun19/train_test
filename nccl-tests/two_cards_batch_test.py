@@ -12,7 +12,7 @@ def main(args):
     d = dict(os.environ)
     out_dir = args.out_dir
     os.makedirs(out_dir, exist_ok=True)
-    shell_cmd = './build/alltoall_perf -b 1K -e 128M -f 2 -g 2'
+    shell_cmd = './build/all_reduce_perf -b 1K -e 1G -f 2 -g 2'
     for pair in pair_arr:
         d['CUDA_VISIBLE_DEVICES'] = ",".join(map(str, pair))
         out_file = os.path.join(out_dir, "_".join(map(str, pair)) + ".txt")
