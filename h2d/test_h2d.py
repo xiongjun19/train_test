@@ -4,10 +4,10 @@ import time
 
 
 
-shape=[4098, 256, 2048]
+shape=[4098, 512, 2048]
 torch_tensor = torch.randn(shape, pin_memory=True)
 
-iters=10
+iters=1
 start = time.time()
 for i in range(iters):
     device_mem = torch_tensor.cuda()

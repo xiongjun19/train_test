@@ -8,13 +8,13 @@ import time
 
 
 def test(device, rank, local_rank):
-    shape=[4098, 256, 2048]
+    shape = [4098, 512, 2048]
     torch_tensor = torch.randn(shape, pin_memory=True)
     # world_size = torch.distributed.get_world_size()
     # step = shape[-1] // world_size
     # split_ts = torch_tensor[:, :, step * local_rank:step *(local_rank+1)]
-    
-    iters=10
+
+    iters=1
     start = time.time()
     for i in range(iters):
         device_mem = torch_tensor.to(device)

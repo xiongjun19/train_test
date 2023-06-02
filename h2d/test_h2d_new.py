@@ -7,12 +7,12 @@ import time
 
 
 def test(device_num):
-    last_dim = 256 * device_num
+    last_dim = 1024 * device_num
     shape=[4098, 256, last_dim]
     torch_tensor = torch.randn(shape, pin_memory=True)
     device_list = list(range(device_num))
 
-    iters=10
+    iters=1
     start = time.time()
     for i in range(iters):
         torch.nn.parallel.scatter(torch_tensor, device_list, dim=-1)
