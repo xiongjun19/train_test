@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <vector>
 #include <omp.h>
+#include <chrono>
 
-// Convenience function for checking CUDA runtime API results
-// can be wrapped around any runtime API call. No-op in release builds.
+
 inline
 cudaError_t checkCuda(cudaError_t result)
 {
@@ -91,16 +91,21 @@ int main(int argc, char* argv[])
   }
   
 
+
+  std::chrono::steady_clock::time_point beg = std::chrono::steady_clock::now(); 
   #pragma omp parallel for num_threads(deviceNum)
   for(int i=0; i<deviceNum; ++i){
       cudaSetDevice(i);
       cudaMemcpy(devVec[i], memVec[i], bytes, cudaMemcpyHostToDevice);
+      cudaDeviceSynchronize();
   }
-
+  std::chrono::steady_clock::time_point end  = std::chrono::steady_clock::now(); 
+  auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(end - beg).count();
+  auto bandWidth =  deviceNum * bytes * 1e-3 / timeDiff;
+  std::cout << "time consumed: " << timeDiff << "\t Host to Device bandwidth (GB/s): " << bandWidth << std::endl;
   for(int i=0; i < deviceNum; ++i){
       cudaFree(devVec[i]);
       cudaFreeHost(memVec[i]);
-
   }
 
   return 0;
