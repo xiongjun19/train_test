@@ -2,6 +2,7 @@
 
 #include <thread>
 #include <cstddef>
+#include <stdlib.h>
 
 
 __global__ void emptyKernel(float* d_data)
@@ -22,7 +23,7 @@ void bandwidthTest(float* h_data, float* d_data, int size, cudaStream_t stream)
   cudaStreamSynchronize(stream);
 }
 
-int main()
+int main(int argc, char* argv[])
 {
   size_t size = static_cast<size_t>(1024) * 1024 * 1024; // 1GB
 
@@ -36,7 +37,9 @@ int main()
     h_data[i] = static_cast<float>(i);
   }
 
-  #define device_num 2//测试GPU卡的数量
+  //测试GPU卡的数量
+  long device_num= strtol(argv[1], NULL, 10);
+
   // 创建 CUDA 流
   cudaStream_t streams[device_num];
   for(int i = 0; i < device_num; i++) {
