@@ -1,6 +1,9 @@
+#include <iostream>
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <vector>
+#include <omp.h>
 
 // Convenience function for checking CUDA runtime API results
 // can be wrapped around any runtime API call. No-op in release builds.
@@ -62,51 +65,43 @@ void profileCopies(float        *h_a,
   checkCuda( cudaEventDestroy(stopEvent) );
 }
 
+
 int main(int argc, char* argv[])
 {
   unsigned int nElements = 40*1024*1024;
   const unsigned int bytes = nElements * sizeof(float);
   long deviceNum= strtol(argv[1], NULL, 10);
   std::cout << " input device Num is: " << deviceNum << std::endl;
+  std::vector<float * > memVec;
+  for(int i=0; i < deviceNum; ++i){
+      float * hPinned;  
+      cudaMallocHost((void**)&hPinned, bytes);
+      memVec.push_back(hPinned);
+      for(int j=0; j<nElements; ++j){
+	      memVec[i][j] = i+j;
+      }
+  }
+  // then init device Mem
+  std::vector<float * > devVec;
+  for(int i=0; i < deviceNum; ++i){
+      cudaSetDevice(i);
+      float * dMem;
+      cudaMalloc((void**)&dMem, bytes);
+      devVec.push_back(dMem);
+  }
+  
 
-  // host arrays
-  // float *h_aPageable, *h_bPageable;   
-  // float *h_aPinned, *h_bPinned;
+  #pragma omp parallel for num_threads(deviceNum)
+  for(int i=0; i<deviceNum; ++i){
+      cudaSetDevice(i);
+      cudaMemcpy(devVec[i], memVec[i], bytes, cudaMemcpyHostToDevice);
+  }
 
-  // // device array
-  // float *d_a;
+  for(int i=0; i < deviceNum; ++i){
+      cudaFree(devVec[i]);
+      cudaFreeHost(memVec[i]);
 
-  // // allocate and initialize
-  // h_aPageable = (float*)malloc(bytes);                    // host pageable
-  // h_bPageable = (float*)malloc(bytes);                    // host pageable
-  // checkCuda( cudaMallocHost((void**)&h_aPinned, bytes) ); // host pinned
-  // checkCuda( cudaMallocHost((void**)&h_bPinned, bytes) ); // host pinned
-  // checkCuda( cudaMalloc((void**)&d_a, bytes) );           // device
-
-  // for (int i = 0; i < nElements; ++i) h_aPageable[i] = i;      
-  // memcpy(h_aPinned, h_aPageable, bytes);
-  // memset(h_bPageable, 0, bytes);
-  // memset(h_bPinned, 0, bytes);
-
-  // // output device info and transfer size
-  // cudaDeviceProp prop;
-  // checkCuda( cudaGetDeviceProperties(&prop, 0) );
-
-  // printf("\nDevice: %s\n", prop.name);
-  // printf("Transfer size (MB): %d\n", bytes / (1024 * 1024));
-
-  // // perform copies and report bandwidth
-  // profileCopies(h_aPageable, h_bPageable, d_a, nElements, "Pageable");
-  // profileCopies(h_aPinned, h_bPinned, d_a, nElements, "Pinned");
-
-  // printf("n");
-
-  // // cleanup
-  // cudaFree(d_a);
-  // cudaFreeHost(h_aPinned);
-  // cudaFreeHost(h_bPinned);
-  // free(h_aPageable);
-  free(h_bPageable);
+  }
 
   return 0;
 }
