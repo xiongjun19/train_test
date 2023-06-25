@@ -20,7 +20,7 @@ void bandwidthTest(float* h_data, float* d_data, int size, cudaStream_t stream)
   emptyKernel<<<1, 1, 0, stream>>>(d_data);
 
   // 确保所有操作都完成
-  cudaStreamSynchronize(stream);
+  // cudaStreamSynchronize(stream);
 }
 
 int main(int argc, char* argv[])
