@@ -16,6 +16,7 @@ RUN pip install -r requirements.txt
 ##############################################################################
 # OPENMPI
 ##############################################################################
+ARG STAGE_DIR='/workspace'
 ENV OPENMPI_BASEVERSION=4.0
 ENV OPENMPI_VERSION=${OPENMPI_BASEVERSION}.1
 RUN cd ${STAGE_DIR} && \
