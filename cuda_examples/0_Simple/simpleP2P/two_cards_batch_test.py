@@ -13,7 +13,7 @@ def main(args):
     d = dict(os.environ)
     out_dir = args.out_dir
     os.makedirs(out_dir, exist_ok=True)
-    shell_cmd = './build/all_reduce_perf -b 1 -e 512M -f 2 -g 2'
+    shell_cmd = './test_run'
     for pair in tqdm(pair_arr):
         d['CUDA_VISIBLE_DEVICES'] = ",".join(map(str, pair))
         out_file = os.path.join(out_dir, "_".join(map(str, pair)) + ".txt")
