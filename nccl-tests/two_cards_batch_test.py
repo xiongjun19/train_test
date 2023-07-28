@@ -16,6 +16,9 @@ def main(args):
     shell_cmd = './build/all_reduce_perf -b 1 -e 512M -f 2 -g 2'
     for pair in tqdm(pair_arr):
         d['CUDA_VISIBLE_DEVICES'] = ",".join(map(str, pair))
+        if args.p2p_disable:
+            d['NCCL_P2P_DISABLE'] = '1'
+
         out_file = os.path.join(out_dir, "_".join(map(str, pair)) + ".txt")
         with open(out_file, "w") as _out:
             subprocess.call(shell_cmd, shell=True, stdout=_out, env=d)
@@ -34,5 +37,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--out_dir', type=str, default='2_cards_out')
     parser.add_argument('-n', '--card_num', type=int, default=10)
+    parser.add_argument('-d', '--p2p_disable', action='store_true')
     args = parser.parse_args()
     main(args)
