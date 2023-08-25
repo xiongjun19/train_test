@@ -201,8 +201,10 @@ def main():
         "and an Nvidia Ampere GPU.",
     )
     parser.add_argument("--cpu", action="store_true", help="If passed, will train on the CPU.")
+    parser.add_argument("--batch_size", type=int, default=16,  help="If passed, will train on the CPU.")
     args = parser.parse_args()
-    config = {"lr": 2e-5, "num_epochs": 10, "seed": 42, "batch_size": 128}
+    config = {"lr": 2e-5, "num_epochs": 10, "seed": 42, "batch_size":
+            args.batch_size}
     training_function(config, args)
 
 

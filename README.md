@@ -30,6 +30,15 @@ docker run --name ${cnt_name} -it --gpus all --ipc=host -v `pwd`:/workspace/trai
 ```
 以上命令生成并且进入了docker 容器
 
+
+### H2D 测试 
+```
+cd /workspace/train_test/h2d
+nvcc --default-stream per-thread profile_multi.cu -Xcompiler -fopenmp -o h2d_test
+CUDA_VISIBLE_DEVICES=0,1 ./h2d_test 1   # this using one card h2d
+CUDA_VISIBLE_DEVICES=0,1 ./h2d_test 2   # this testing the two cards h2d 
+```
+
 ### 在容器里面编译与测试nccl_test
 ```
 cd /workspace/train_test/nccl-tests
@@ -40,10 +49,31 @@ CUDA_VISIBLE_DEVICES=0,2 ./build/all_reduce_perf -b 1K -e 128M -f 2 -g 2 > nccl-
 CUDA_VISIBLE_DEVICES=0,5 ./build/all_reduce_perf -b 1K -e 128M -f 2 -g 2 > nccl-test_log_0_5.txt
 ```
 
-### 运行python 脚本检测torch all reduce 
+#### 卡和卡之间两两批量测试
 ```
-cd /workspace/train_test/
-OMP_NUM_THREADS=20 python -m  torch.distributed.launch --nproc_per_node 8 --nnodes 1 --node_rank 0 test_nccl.py
+cd /workspace/train_test/nccl-tests
+python two_cards_batch_test.py -n 10 -o two_out_dir   # 这里的10 表示10张卡
+python parser -i two_out_dir -o two_card_bw.csv
+```
+
+### peer2peer 测试 
+在容器中执行以下命令可以进行peer2peer 的测试
+step1 编译
+```
+cd /workspace/train_test/cuda_examples/0_Simple/simpleP2P
+bash comp.sh
+```
+step2 手动运行peer2peer copy 
+```
+./test_run
+CUDA_VISIBLE_DEVICES=1,5 ./test_run
+```
+
+卡和卡之间两两批量运行peer2peer copy 
+```
+cd /workspace/train_test/cuda_examples/0_Simple/simpleP2P
+python two_cards_batch_test.py -o p2p_out -n 10
+python parser.py -i p2p_out/ -o batch_res.csv
 ```
 
 
