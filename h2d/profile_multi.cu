@@ -69,6 +69,7 @@ void profileCopies(float        *h_a,
 int main(int argc, char* argv[])
 {
   unsigned int nElements = 40*1024*1024;
+  // unsigned int nElements = 2;
   const unsigned int bytes = nElements * sizeof(float);
   long deviceNum= strtol(argv[1], NULL, 10);
   std::cout << " input device Num is: " << deviceNum << std::endl;
