@@ -158,7 +158,11 @@ def train(args):
             # optimizer.step()
             scaler.step(optimizer)
             scaler.update()
+            tot_time = timer('tot').elapsed()
+            thro = args.batch_size / tot_time  
+            print("tho is: ", thro)
             timer.log(['tot'])
+
             iter_no += 1
             if iter_no >= tot_iters:
                 break
